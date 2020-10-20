@@ -4,44 +4,42 @@ def clear():
     system('clear') if name == 'posix' else system('cls')
 
 class Board:
-    POSITIONS = [
-        None, None, None,
-        None, None, None,
-        None, None, None
-        ]
-
     def __init__(self):
-        self.current = self.POSITIONS[:]
+        self.state = [
+            None, None, None,
+            None, None, None,
+            None, None, None
+            ]
 
     def rows(self, index):
-        rows = [[], [], []]
+        rows = ([], [], [])
         i = 0
         for row in rows:
-            row.append(self.current[i])
-            row.append(self.current[i + 1])
-            row.append(self.current[i + 2])
+            row.append(self.state[i])
+            row.append(self.state[i + 1])
+            row.append(self.state[i + 2])
             i += 3
         return rows[index]
 
     def columns(self, index):
-        columns = [[], [], []]
+        columns = ([], [], [])
         i = 0
         for column in columns:
-            column.append(self.current[i])
-            column.append(self.current[i + 3])
-            column.append(self.current[i + 6])
+            column.append(self.state[i])
+            column.append(self.state[i + 3])
+            column.append(self.state[i + 6])
             i += 1
         return columns[index]
 
     def diagonals(self, index):
-        diagonals = [[], []]
-        if index in [0, 1]:
-            diagonals[0].append(self.current[0])
-            diagonals[0].append(self.current[4])
-            diagonals[0].append(self.current[8])
-            diagonals[1].append(self.current[2])
-            diagonals[1].append(self.current[4])
-            diagonals[1].append(self.current[6])
+        diagonals = ([], [])
+        if index in (0, 1):
+            diagonals[0].append(self.state[0])
+            diagonals[0].append(self.state[4])
+            diagonals[0].append(self.state[8])
+            diagonals[1].append(self.state[2])
+            diagonals[1].append(self.state[4])
+            diagonals[1].append(self.state[6])
             return diagonals[index]
         else:
             return [None, None, None]
@@ -54,7 +52,7 @@ class Board:
 +---------+    +---------+
 '''
         draw = []
-        for i in self.current:
+        for i in self.state:
             if i == None:
                 draw += '.'
             else:
@@ -73,20 +71,20 @@ class Game:
     def player(self):
         return 'x' if self.turn % 2 == 0 else 'o'
 
-    def validate(self, board, position, inputs):
-        return inputs in '123456789' and board.current[position] == None
+    def validate(self, board, position):
+        return board.state[position] == None
 
     def place(self, board, position):
-        board.current[position] = self.player()
+        board.state[position] = self.player()
 
     def check(self, board):
-        CHECKS = [board.rows, board.columns, board.diagonals]
+        CHECKS = (board.rows, board.columns, board.diagonals)
         for check in CHECKS:
-            for index in [0, 1, 2]:
+            for index in (0, 1, 2):
                 if check(index).count(self.player()) == 3:
                     self.active = False
                     return f'{self.player()} won'
-        if None not in board.current and self.active:
+        if None not in board.state and self.active:
             self.active = False
             return 'draw'
 
@@ -100,7 +98,7 @@ class Game:
         clear()
         print(board)
         if type(winner) == str:
-            print(f'winner :: {winner}')
+            print(f'result :: {winner}')
 
 def main():
     game = Game()
@@ -109,13 +107,12 @@ def main():
 
     while game.active:
         inputs = input(f'{game.player()}\'s turn :: ').strip().lower()
-        # try to interpret input as a position, otherwise, as a command
-        try:
-            if game.validate(board, position := int(inputs) - 1, inputs):
+
+        if inputs in ('1', '2', '3', '4', '5', '6', '7', '8', '9'):
+            if game.validate(board, position := int(inputs) - 1):
                 game.update(board, position)
-        except:
-            if inputs == 'q':
-                quit()
+        elif inputs == 'q':
+            quit()
 
 if __name__ == '__main__':
     main()
