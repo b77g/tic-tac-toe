@@ -1,6 +1,6 @@
 # tic-tac-toe
 
-a simple, object-oriented tic-tac-toe CLI game
+a simple, object-oriented tic-tac-toe CLI game.
 
 ### dependencies
 
