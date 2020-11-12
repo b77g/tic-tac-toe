@@ -97,12 +97,12 @@ class Game:
     def visualize(self, board, winner=None):
         clear()
         print(board)
-        if type(winner) == str:
+        if winner:
             print(f'result :: {winner}')
 
 def main():
-    game = Game()
     board = Board()
+    game = Game()
     game.visualize(board)
 
     while game.active:
