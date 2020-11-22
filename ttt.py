@@ -82,15 +82,14 @@ class Game:
         for check in CHECKS:
             for index in (0, 1, 2):
                 if check(index).count(self.player()) == 3:
-                    self.active = False
                     return f'{self.player()} won'
         if None not in board.state and self.active:
-            self.active = False
             return 'draw'
 
     def update(self, board, position):
         self.place(board, position)
         winner = self.check(board)
+        self.active = False if winner else True
         self.visualize(board, winner)
         self.turn += 1
 
@@ -101,16 +100,16 @@ class Game:
             print(f'result :: {winner}')
 
 def main():
-    board = Board()
-    game = Game()
-    game.visualize(board)
+    BOARD = Board()
+    GAME = Game()
+    GAME.visualize(BOARD)
 
-    while game.active:
-        inputs = input(f'{game.player()}\'s turn :: ').strip().lower()
+    while GAME.active:
+        inputs = input(f'{GAME.player()}\'s turn :: ').strip().lower()
 
         if inputs in ('1', '2', '3', '4', '5', '6', '7', '8', '9'):
-            if game.validate(board, position := int(inputs) - 1):
-                game.update(board, position)
+            if GAME.validate(BOARD, position := int(inputs) - 1):
+                GAME.update(BOARD, position)
         elif inputs == 'q':
             quit()
 
