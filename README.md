@@ -27,8 +27,11 @@ x's turn ::
 
 ### to-do
 
-- [ ] colors
-- [ ] an AI
+- [ ] minimax AI
+- [ ] playing alone or against the AI
+- [ ] choosing who goes first
+- [ ] more tests
+- [ ] "play again" function
 
 ### license
 
