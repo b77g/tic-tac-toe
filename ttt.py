@@ -1,7 +1,5 @@
 from os import system, name
 
-def clear():
-    system('clear') if name == 'posix' else system('cls')
 
 class Board:
     def __init__(self):
@@ -9,9 +7,9 @@ class Board:
             None, None, None,
             None, None, None,
             None, None, None
-            ]
+        ]
 
-    def rows(self, index):
+    def get_row(self, index):
         rows = ([], [], [])
         i = 0
         for row in rows:
@@ -21,7 +19,7 @@ class Board:
             i += 3
         return rows[index]
 
-    def columns(self, index):
+    def get_column(self, index):
         columns = ([], [], [])
         i = 0
         for column in columns:
@@ -31,7 +29,7 @@ class Board:
             i += 1
         return columns[index]
 
-    def diagonals(self, index):
+    def get_diagonal(self, index):
         diagonals = ([], [])
         if index in (0, 1):
             diagonals[0].append(self.state[0])
@@ -42,76 +40,71 @@ class Board:
             diagonals[1].append(self.state[6])
             return diagonals[index]
         else:
-            return [None, None, None]
+            return (None, None, None)
 
     def __str__(self):
-        TEMPLATE = '''+---------+    +---------+
-| {}  {}  {} |    | 1  2  3 |
-| {}  {}  {} |    | 4  5  6 |
-| {}  {}  {} |    | 7  8  9 |
-+---------+    +---------+
-'''
-        draw = []
-        for i in self.state:
-            if i == None:
-                draw += '.'
-            else:
-                draw += i
-        return TEMPLATE.format(
-            draw[0], draw[1], draw[2],
-            draw[3], draw[4], draw[5],
-            draw[6], draw[7], draw[8],
-            )
+        TEMPLATE = (
+            '+---------+    +---------+\n'
+            + '| {}  {}  {} |    | 1  2  3 |\n'
+            + '| {}  {}  {} |    | 4  5  6 |\n'
+            + '| {}  {}  {} |    | 7  8  9 |\n'
+            + '+---------+    +---------+\n'
+        )
+        format_string = (
+            item if item != None else '.'
+            for item in self.state
+        )
+        return TEMPLATE.format(*format_string)
+
+
+class Player:
+    def __init__(self, letter):
+        self.letter = letter
+
+    def get_move(self):
+        return input().strip().lower()
+
+    def __repr__(self):
+        return self.letter
+
 
 class Game:
-    def __init__(self):
+    def __init__(self, board, player_1, player_2):
+        self.board = board
+        self.player_1 = player_1
+        self.player_2 = player_2
         self.active = True
         self.turn = 0
 
-    def player(self):
-        return 'x' if self.turn % 2 == 0 else 'o'
+    def get_player(self):
+        return self.player_1 if self.turn % 2 == 0 else self.player_2
 
-    def validate(self, board, position):
-        return board.state[position] == None
+    def validate(self, position):
+        return self.board.state[position] == None
 
-    def place(self, board, position):
-        board.state[position] = self.player()
+    def place(self, position):
+        self.board.state[position] = self.get_player()
 
-    def check(self, board):
-        CHECKS = (board.rows, board.columns, board.diagonals)
+    def check_board(self):
+        CHECKS = (
+            self.board.get_row, self.board.get_column, self.board.get_diagonal
+        )
         for check in CHECKS:
             for index in (0, 1, 2):
-                if check(index).count(self.player()) == 3:
-                    return f'{self.player()} won'
-        if None not in board.state and self.active:
+                if check(index).count(self.get_player()) == 3:
+                    return f'{self.get_player()} won'
+        if None not in self.board.state and self.active:
             return 'draw'
 
-    def update(self, board, position):
-        self.place(board, position)
-        winner = self.check(board)
+    def update(self, position):
+        self.place(position)
+        winner = self.check_board()
         self.active = False if winner else True
-        self.visualize(board, winner)
+        self.visualize(winner)
         self.turn += 1
 
-    def visualize(self, board, winner=None):
-        clear()
-        print(board)
+    def visualize(self, winner=None):
+        system('clear') if name == 'posix' else system('cls')
+        print(self.board)
         if winner:
             print(f'result :: {winner}')
-
-def main():
-    BOARD = Board()
-    GAME = Game()
-    GAME.visualize(BOARD)
-
-    while GAME.active:
-        inputs = input(f'{GAME.player()}\'s turn :: ').strip().lower()
-
-        if inputs in ('1', '2', '3', '4', '5', '6', '7', '8', '9'):
-            if GAME.validate(BOARD, position := int(inputs) - 1):
-                GAME.update(BOARD, position)
-        elif inputs == 'q':
-            quit()
-
-if __name__ == '__main__':
-    main()

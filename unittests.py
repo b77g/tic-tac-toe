@@ -1,50 +1,61 @@
 import unittest
-from ttt import Board, Game
 
-class TestGame(unittest.TestCase):
+from ttt import Board, Player, Game
+
+
+# `TestGame` places the string representation of player objects
+# instead of their instance, which makes tests more readable
+class TestGame(Game):
+    def __init__(self, board, player_1, player_2):
+        super().__init__(board, player_1, player_2)
+
+    def get_player(self):
+        return str(self.player_1 if self.turn % 2 == 0 else self.player_2)
+
+
+class Test(unittest.TestCase):
     def setUp(self):
         self.board = Board()
-        self.game = Game()
+        self.player_1 = Player('x')
+        self.player_2 = Player('o')
+        self.game = TestGame(self.board, self.player_1, self.player_2)
 
     def test_row(self):
-        self.board.state = [
+        self.game.turn = 8
+        self.board.state = (
             'o', 'o', 'x',
             'x', 'x', 'x',
             'o', 'x', 'o'
-            ]
-        self.game.turn = 8
-        result = self.game.check(self.board)
-        self.assertEqual(result, 'x won')
+        )
+        self.assertEqual(self.game.check_board(), 'x won')
 
-    def test_col(self):
-        self.board.state = [
+    def test_column(self):
+        self.game.turn = 5
+        self.board.state = (
             'o', None, 'x',
             'o', 'x', 'x',
             'o', None, None
-            ]
-        self.game.turn = 5
-        result = self.game.check(self.board)
-        self.assertEqual(result, 'o won')
+        )
+        self.assertEqual(self.game.check_board(), 'o won')
 
-    def test_diag(self):
-        self.board.state = [
+    def test_diagonal(self):
+        self.game.turn = 6
+        self.board.state = (
             'x', 'o', 'o',
             'o', 'x', 'x',
             None, None, 'x'
-            ]
-        self.game.turn = 6
-        result = self.game.check(self.board)
-        self.assertEqual(result, 'x won')
+        )
+        self.assertEqual(self.game.check_board(), 'x won')
 
     def test_draw(self):
-        self.board.state = [
+        self.game.turn = 8
+        self.board.state = (
             'x', 'o', 'x',
             'x', 'o', 'o',
             'o', 'x', 'x'
-            ]
-        self.game.turn = 8
-        result = self.game.check(self.board)
-        self.assertEqual(result, 'draw')
+        )
+        self.assertEqual(self.game.check_board(), 'draw')
+
 
 if __name__ == '__main__':
     unittest.main()
