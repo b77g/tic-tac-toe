@@ -23,36 +23,36 @@ class Test(unittest.TestCase):
     def test_row(self):
         self.game.turn = 8
         self.board.state = (
-            'o', 'o', 'x',
-            'x', 'x', 'x',
-            'o', 'x', 'o'
+            ['o', 'o', 'x'],
+            ['x', 'x', 'x'],
+            ['o', 'x', 'o']
         )
         self.assertEqual(self.game.check_board(), 'x won')
 
     def test_column(self):
         self.game.turn = 5
         self.board.state = (
-            'o', None, 'x',
-            'o', 'x', 'x',
-            'o', None, None
+            ['o', None, 'x'],
+            ['o', 'x', 'x'],
+            ['o', None, None]
         )
         self.assertEqual(self.game.check_board(), 'o won')
 
     def test_diagonal(self):
         self.game.turn = 6
         self.board.state = (
-            'x', 'o', 'o',
-            'o', 'x', 'x',
-            None, None, 'x'
+            ['x', 'o', 'o'],
+            ['o', 'x', 'x'],
+            [None, None, 'x']
         )
         self.assertEqual(self.game.check_board(), 'x won')
 
     def test_draw(self):
         self.game.turn = 8
         self.board.state = (
-            'x', 'o', 'x',
-            'x', 'o', 'o',
-            'o', 'x', 'x'
+            ['x', 'o', 'x'],
+            ['x', 'o', 'o'],
+            ['o', 'x', 'x']
         )
         self.assertEqual(self.game.check_board(), 'draw')
 

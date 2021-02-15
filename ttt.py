@@ -3,44 +3,40 @@ from os import system, name
 
 class Board:
     def __init__(self):
-        self.state = [
-            None, None, None,
-            None, None, None,
-            None, None, None
-        ]
+        self.state = (
+            [None, None, None],
+            [None, None, None],
+            [None, None, None]
+        )
 
     def get_row(self, index):
-        rows = ([], [], [])
-        i = 0
-        for row in rows:
-            row.append(self.state[i])
-            row.append(self.state[i + 1])
-            row.append(self.state[i + 2])
-            i += 3
-        return rows[index]
+        return tuple(self.state[index])
 
     def get_column(self, index):
-        columns = ([], [], [])
-        i = 0
-        for column in columns:
-            column.append(self.state[i])
-            column.append(self.state[i + 3])
-            column.append(self.state[i + 6])
-            i += 1
-        return columns[index]
+        return (
+            self.state[0][index],
+            self.state[1][index],
+            self.state[2][index]
+        )
 
     def get_diagonal(self, index):
-        diagonals = ([], [])
-        if index in (0, 1):
-            diagonals[0].append(self.state[0])
-            diagonals[0].append(self.state[4])
-            diagonals[0].append(self.state[8])
-            diagonals[1].append(self.state[2])
-            diagonals[1].append(self.state[4])
-            diagonals[1].append(self.state[6])
-            return diagonals[index]
+        if index == 0:
+            return (
+                self.state[0][0],
+                self.state[1][1],
+                self.state[2][2]
+            )
+        elif index == 1:
+            return (
+                self.state[0][2],
+                self.state[1][1],
+                self.state[2][0]
+            )
         else:
             return (None, None, None)
+
+    def flat_board(self):
+        return tuple(item for list in self.state for item in list)
 
     def __str__(self):
         TEMPLATE = (
@@ -52,7 +48,7 @@ class Board:
         )
         format_string = (
             item if item != None else '.'
-            for item in self.state
+            for item in self.flat_board()
         )
         return TEMPLATE.format(*format_string)
 
@@ -79,11 +75,18 @@ class Game:
     def get_player(self):
         return self.player_1 if self.turn % 2 == 0 else self.player_2
 
-    def validate(self, position):
-        return self.board.state[position] == None
+    def parse(self, position):
+        return {
+            0: (0, 0), 1: (0, 1), 2: (0, 2),
+            3: (1, 0), 4: (1, 1), 5: (1, 2),
+            6: (2, 0), 7: (2, 1), 8: (2, 2)
+        }.get(position)
 
-    def place(self, position):
-        self.board.state[position] = self.get_player()
+    def validate(self, x, y):
+        return self.board.state[x][y] == None
+
+    def place(self, x, y):
+        self.board.state[x][y] = self.get_player()
 
     def check_board(self):
         CHECKS = (
@@ -93,11 +96,11 @@ class Game:
             for index in (0, 1, 2):
                 if check(index).count(self.get_player()) == 3:
                     return f'{self.get_player()} won'
-        if None not in self.board.state and self.active:
+        if None not in self.board.flat_board() and self.active:
             return 'draw'
 
     def update(self, position):
-        self.place(position)
+        self.place(*position)
         winner = self.check_board()
         self.active = False if winner else True
         self.visualize(winner)

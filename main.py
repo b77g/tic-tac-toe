@@ -14,7 +14,8 @@ def main():
         inputs = GAME.get_player().get_move()
 
         if inputs in ('1', '2', '3', '4', '5', '6', '7', '8', '9'):
-            if GAME.validate(position := int(inputs) - 1):
+            position = GAME.parse(int(inputs) - 1)
+            if GAME.validate(*position):
                 GAME.update(position)
 
         elif inputs == 'q':
@@ -23,4 +24,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
