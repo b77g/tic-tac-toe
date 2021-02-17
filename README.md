@@ -4,12 +4,12 @@ a simple, object-oriented tic-tac-toe CLI game.
 
 ### dependencies
 
-python's built-in `os` module.
+python's built-in `os` module (and `unittest` if you want to run the tests).
 
 ### installation
 
 download the zip folder (or clone the repostory)
-and execute `ttt.py` on your console.
+and run `main.py`.
 
 ### how to play
 
@@ -24,6 +24,8 @@ when prompted, type in the position you want to play and hit `ENTER`.
 
 x's turn :: 
 ```
+
+enter `q` at any time to quit the game.
 
 ### to-do
 
