@@ -35,7 +35,8 @@ class Board:
         else:
             return (None, None, None)
 
-    def flat_board(self):
+    @property
+    def flattened(self):
         return tuple(item for list in self.state for item in list)
 
     def __str__(self):
@@ -48,7 +49,7 @@ class Board:
         )
         format_string = (
             item if item != None else '.'
-            for item in self.flat_board()
+            for item in self.flattened
         )
         return TEMPLATE.format(*format_string)
 
@@ -57,7 +58,8 @@ class Player:
     def __init__(self, letter):
         self.letter = letter
 
-    def get_move(self):
+    @staticmethod
+    def get_move():
         return input().strip().lower()
 
     def __repr__(self):
@@ -75,18 +77,19 @@ class Game:
     def get_player(self):
         return self.player_1 if self.turn % 2 == 0 else self.player_2
 
-    def parse(self, position):
-        return {
-            0: (0, 0), 1: (0, 1), 2: (0, 2),
-            3: (1, 0), 4: (1, 1), 5: (1, 2),
-            6: (2, 0), 7: (2, 1), 8: (2, 2)
-        }.get(position)
-
     def validate(self, x, y):
         return self.board.state[x][y] == None
 
     def place(self, x, y):
         self.board.state[x][y] = self.get_player()
+
+    @staticmethod
+    def parse(position):
+        return {
+            0: (0, 0), 1: (0, 1), 2: (0, 2),
+            3: (1, 0), 4: (1, 1), 5: (1, 2),
+            6: (2, 0), 7: (2, 1), 8: (2, 2)
+        }.get(position)
 
     def check_board(self):
         CHECKS = (
@@ -96,8 +99,14 @@ class Game:
             for index in (0, 1, 2):
                 if check(index).count(self.get_player()) == 3:
                     return f'{self.get_player()} won'
-        if None not in self.board.flat_board() and self.active:
+        if None not in self.board.flattened and self.active:
             return 'draw'
+
+    def visualize(self, winner=None):
+        system('clear') if name == 'posix' else system('cls')
+        print(self.board)
+        if winner:
+            print(f'result :: {winner}')
 
     def update(self, position):
         self.place(*position)
@@ -105,9 +114,3 @@ class Game:
         self.active = False if winner else True
         self.visualize(winner)
         self.turn += 1
-
-    def visualize(self, winner=None):
-        system('clear') if name == 'posix' else system('cls')
-        print(self.board)
-        if winner:
-            print(f'result :: {winner}')
